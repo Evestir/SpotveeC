@@ -404,16 +404,16 @@ jobs:
         echo "AltStore Release Download URL: $RELEASEURLALTSTORE"
         echo "RELEASEURLALTSTORE=$RELEASEURLALTSTORE" >> $GITHUB_ENV
     
-    - name: Upload to Catbox (Without Hash)
-      if: ${{ env.CATBOXHASH_ENABLED == 'false' }}
-      run: |
-        RELEASEURL=$(curl -F "reqtype=fileupload" -F "fileToUpload=@${{ env.patchedspotify }}" https://catbox.moe/user/api.php)
-        echo "Standard Release Download URL: $RELEASEURL"
-        echo "RELEASEURL=$RELEASEURL" >> $GITHUB_ENV
-    
-        RELEASEURLALTSTORE=$(curl -F "reqtype=fileupload" -F "fileToUpload=@${{ env.altpatchedspotify }}" https://catbox.moe/user/api.php)
-        echo "AltStore Release Download URL: $RELEASEURLALTSTORE"
-        echo "RELEASEURLALTSTORE=$RELEASEURLALTSTORE" >> $GITHUB_ENV
+    - name: Upload Artifacts
+      # Only run if your specific condition is met, or remove 'if' to always run
+      if: ${{ env.CATBOXHASH_ENABLED == 'false' }} 
+      uses: actions/upload-artifact@v4
+      with:
+        name: Spotify-IPA-Files
+        path: |
+          ${{ env.patchedspotify }}
+          ${{ env.altpatchedspotify }}
+        if-no-files-found: warn
 
     - name: Extract and Prepare VirusTotal Links
       if: ${{ env.VT_ENABLED == 'true' }}
